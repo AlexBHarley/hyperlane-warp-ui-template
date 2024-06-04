@@ -3109,6 +3109,7 @@ __metadata:
     react-toastify: "npm:^9.1.3"
     tailwindcss: "npm:^3.3.2"
     ts-node: "npm:^10.9.1"
+    ts-pattern: "npm:^5.1.2"
     typescript: "npm:^5.3.3"
     viem: "npm:1.20.0"
     wagmi: "npm:^1.4.12"
@@ -15439,6 +15440,13 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: bee56d4dc96ccbafc99dfab7b73fbabc62abab2562af53cdea91c874a301b9d11e42bc33c0a032a6ed6d813dbdc9295ec73dde7b73ea4ebde02b0e22006f7e04
+  languageName: node
+  linkType: hard
+
+"ts-pattern@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "ts-pattern@npm:5.1.2"
+  checksum: 3c7215bab48d54bcf2a20214145ec53b28bb9f07ce592524d4ea1e3a76481bc1478338aed0119495962e83182be63491fa03682a2381118a243396f6b33df11a
   languageName: node
   linkType: hard
 
