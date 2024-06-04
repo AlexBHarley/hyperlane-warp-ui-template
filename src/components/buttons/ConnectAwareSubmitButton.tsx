@@ -7,15 +7,20 @@ import { tryGetChainProtocol } from '../../features/chains/utils';
 import { useAccountForChain, useConnectFns } from '../../features/wallet/hooks/multiProtocol';
 import { useTimeout } from '../../utils/timeout';
 
-import { SolidButton } from './SolidButton';
+import { SolidButton, SolidButtonProps } from './SolidButton';
 
-interface Props {
+interface Props extends SolidButtonProps {
   chainName: ChainName;
   text: string;
   classes?: string;
 }
 
-export function ConnectAwareSubmitButton<FormValues = any>({ chainName, text, classes }: Props) {
+export function ConnectAwareSubmitButton<FormValues = any>({
+  chainName,
+  text,
+  classes,
+  ...props
+}: Props) {
   const protocol = tryGetChainProtocol(chainName) || ProtocolType.Ethereum;
   const connectFns = useConnectFns();
   const connectFn = connectFns[protocol];
@@ -43,7 +48,7 @@ export function ConnectAwareSubmitButton<FormValues = any>({ chainName, text, cl
   useTimeout(clearErrors, 3500);
 
   return (
-    <SolidButton type={type} color={color} onClick={onClick} classes={classes}>
+    <SolidButton {...props} type={type} color={color} onClick={onClick} classes={classes}>
       {content}
     </SolidButton>
   );

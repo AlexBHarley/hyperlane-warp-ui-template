@@ -8,9 +8,9 @@ interface ButtonProps {
   icon?: ReactElement;
 }
 
-export function SolidButton(
-  props: PropsWithChildren<ButtonProps & React.HTMLProps<HTMLButtonElement>>,
-) {
+export type SolidButtonProps = PropsWithChildren<ButtonProps & React.HTMLProps<HTMLButtonElement>>;
+
+export function SolidButton(props: SolidButtonProps) {
   const {
     type,
     onClick,
