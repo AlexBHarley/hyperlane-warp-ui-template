@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
+import { P, match } from 'ts-pattern';
 
 import { TokenAmount } from '@hyperlane-xyz/sdk';
 import { ProtocolType, errorToString, isNullish, toWei } from '@hyperlane-xyz/utils';
@@ -58,10 +59,9 @@ export function TransferTokenForm() {
       initialValues={initialValues}
       onSubmit={onSubmitForm}
       validate={validate}
-      validateOnChange={false}
-      validateOnBlur={false}
+      validateOnChange
     >
-      {({ isValidating }) => (
+      {() => (
         <Form className="flex flex-col items-stretch w-full mt-2">
           <ChainSelectSection isReview={isReview} />
           <div className="mt-3 flex justify-between items-end space-x-4">
@@ -70,11 +70,7 @@ export function TransferTokenForm() {
           </div>
           <RecipientSection isReview={isReview} />
           <ReviewDetails visible={isReview} />
-          <ButtonSection
-            isReview={isReview}
-            isValidating={isValidating}
-            setIsReview={setIsReview}
-          />
+          <ButtonSection isReview={isReview} setIsReview={setIsReview} />
         </Form>
       )}
     </Formik>
@@ -207,14 +203,12 @@ function TokenBalance({ label, balance }: { label: string; balance?: TokenAmount
 
 function ButtonSection({
   isReview,
-  isValidating,
   setIsReview,
 }: {
   isReview: boolean;
-  isValidating: boolean;
   setIsReview: (b: boolean) => void;
 }) {
-  const { values } = useFormikContext<TransferFormValues>();
+  const { values, isValidating, errors } = useFormikContext<TransferFormValues>();
 
   const onDoneTransactions = () => {
     setIsReview(false);
@@ -233,11 +227,46 @@ function ButtonSection({
   };
 
   if (!isReview) {
+    const { disabled, label } = match({
+      amount: values.amount,
+      tokenIndex: values.tokenIndex,
+      recipient: values.recipient,
+      errors: errors,
+      isValidating,
+    })
+      // Few overrides for nicer frontend error messages than
+      // what the SDK returns
+      .with({ amount: '' }, () => ({
+        disabled: true,
+        label: 'Enter an amount',
+      }))
+      .with({ recipient: '' }, () => ({
+        disabled: true,
+        label: 'Enter a recipient address',
+      }))
+      .with({ tokenIndex: P.nullish }, () => ({
+        disabled: true,
+        label: 'Choose a token',
+      }))
+      .with({ errors: P.not(P.nullish) }, ({ errors }) => ({
+        disabled: true,
+        label: Object.values(errors)[0],
+      }))
+      .with({ isValidating: true }, () => ({
+        disabled: true,
+        label: 'Validating...',
+      }))
+      .otherwise(() => ({
+        disabled: false,
+        label: 'Continue',
+      }));
+
     return (
       <ConnectAwareSubmitButton
         chainName={values.origin}
-        text={isValidating ? 'Validating...' : 'Continue'}
+        text={label}
         classes="mt-4 px-3 py-1.5"
+        disabled={disabled}
       />
     );
   }
